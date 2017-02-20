@@ -33,7 +33,7 @@ class WP_Swift_Form_Builder_Contact_Form_Plugin {
         $Form_Builder = null;
         if ( class_exists('WP_Swift_Form_Builder_Plugin')) {
             $submit_button_name = "submit-request-form";
-            $form_data = $this->get_form_data();
+            $form_data = $this->get_account_form();
             $form_builder_args = array(
                 "form_name" => "request-form",
                 "submit_button_name" => $submit_button_name,
@@ -95,7 +95,9 @@ class WP_Swift_Form_Builder_Contact_Form_Plugin {
 // echo "<pre>"; var_dump($Form_Builder->form_settings); echo "</pre>";
         // If POST
 if(isset($_POST['submit-request-form'])){ //check if form was submitted
-    echo "<pre>"; var_dump($_POST); echo "</pre>";
+
+  $Form_Builder->set_form_pristine(false);
+    // echo "<pre>"; var_dump($_POST); echo "</pre><hr>";
     // $form_settings = process_form($form_settings, $_POST);
 
 
@@ -104,14 +106,20 @@ if(isset($_POST['submit-request-form'])){ //check if form was submitted
         //     $mail_receipt=true;//Send an auto-response to user
         // }
         // // include('_email-template.php');
-   
-        // //Loop through the POST and validate. Store the values in $form_data
-        // foreach ($_POST as $key => $value) {
-        //     if (($key!='submit-request-form') && ($key!='mail-receipt') && ($key!='form-file-upload') && ($key!='g-recaptcha-response')) { //Skip the button and mail-receipt checkbox
-        //         $form_settings["form_data"][$key] = check_input($form_settings["form_data"][$key], $value);//Validate input    
-        //         // echo '<pre>';var_dump($form_settings["form_data"][$key]); echo '</pre>';
-        //     }
-        // }
+    // echo "<pre>"; var_dump($Form_Builder->form_settings); echo "</pre><hr>";
+        //Loop through the POST and validate. Store the values in $form_data
+        foreach ($_POST as $key => $value) {
+            if (($key!='submit-request-form') && ($key!='mail-receipt') && ($key!='form-file-upload') && ($key!='g-recaptcha-response')) { //Skip the button and mail-receipt checkbox
+                // $Form_Builder->form_settings[$key] = check_input($Form_Builder->form_settings[$key], $value);//Validate input  
+
+                // check_input($data, $value)
+
+                // $Form_Builder->form_settings[$key] = $Form_Builder->check_input($Form_Builder->form_settings[$key], $value);//Validate input    
+                $Form_Builder->check_input($key, $value);//Validate input    
+                // echo '<pre>'.$key.': ';var_dump($Form_Builder->form_settings["form_data"][$key]); echo '</pre><hr>';
+            }
+        }
+         // echo "<pre>"; var_dump($Form_Builder->form_settings); echo "</pre><hr>";
 }   
 
      
@@ -214,6 +222,161 @@ if(isset($_POST['submit-request-form'])){ //check if form was submitted
             'help' => '',
           ),  
         );
+    }
+
+    public function get_account_form() {
+      return array (
+  'form-section-open-name-details' => 
+  array (
+    'passed' => true,
+    'section' => 1,
+    'section_header' => 'Name Details',
+    'section_content' => 'Seamlessly benchmark magnetic initiatives whereas vertical e-tailers. Holisticly restore B2B web services via diverse synergy. Synergistically grow fully tested strategic theme areas whereas',
+    'type' => 'section',
+  ),
+  'form-user-account-first-name' => 
+  array (
+    'passed' => false,
+    'clean' => '',
+    'value' => '',
+    'section' => 1,
+    'required' => 'required',
+    'type' => 'text',
+    'placeholder' => '',
+    'label' => 'First Name',
+    'help' => '',
+  ),
+  'form-user-account-last-name' => 
+  array (
+    'passed' => false,
+    'clean' => '',
+    'value' => '',
+    'section' => 1,
+    'required' => 'required',
+    'type' => 'text',
+    'placeholder' => '',
+    'label' => 'Last Name',
+    'help' => '',
+  ),
+  'form-user-account-nickname' => 
+  array (
+    'passed' => false,
+    'clean' => '',
+    'value' => '',
+    'section' => 1,
+    'required' => 'required',
+    'type' => 'text',
+    'placeholder' => '',
+    'label' => 'Nickname',
+    'help' => '',
+  ),
+  'form-section-close-name-details' => 
+  array (
+    'passed' => true,
+    'section' => 1,
+    'type' => 'section_close',
+  ),
+  'form-section-open-contact-info' => 
+  array (
+    'passed' => true,
+    'section' => 2,
+    'section_header' => 'Contact Info',
+    'section_content' => 'Intrinsicly negotiate revolutionary channels after vertical value. Conveniently synthesize.',
+    'type' => 'section',
+  ),
+  'form-user-account-email' => 
+  array (
+    'passed' => false,
+    'clean' => '',
+    'value' => '',
+    'section' => 2,
+    'required' => 'required',
+    'type' => 'email',
+    'placeholder' => '',
+    'label' => 'Email',
+    'help' => '',
+  ),
+  'form-user-account-website' => 
+  array (
+    'passed' => false,
+    'clean' => '',
+    'value' => '',
+    'section' => 2,
+    'required' => 'required',
+    'type' => 'url',
+    'placeholder' => '',
+    'label' => 'Website',
+    'help' => '',
+  ),
+  'form-user-account-tel' => 
+  array (
+    'passed' => false,
+    'clean' => '',
+    'value' => '',
+    'section' => 2,
+    'required' => '',
+    'type' => 'text',
+    'placeholder' => '',
+    'label' => 'Telephone',
+    'help' => '',
+  ),
+  'form-user-account-mobile' => 
+  array (
+    'passed' => false,
+    'clean' => '',
+    'value' => '',
+    'section' => 2,
+    'required' => '',
+    'type' => 'text',
+    'placeholder' => '',
+    'label' => 'Mobile',
+    'help' => '',
+  ),
+  'form-section-close-contact-info' => 
+  array (
+    'passed' => true,
+    'section' => 2,
+    'type' => 'section_close',
+  ),
+  'form-section-open-about-yourself' => 
+  array (
+    'passed' => true,
+    'section' => 3,
+    'section_header' => 'About Yourself',
+    'section_content' => 'Holisticly recaptiualize market positioning paradigms and user-centric internal or.',
+    'type' => 'section',
+  ),
+  'form-user-account-practice' => 
+  array (
+    'passed' => false,
+    'clean' => '',
+    'value' => '',
+    'section' => 3,
+    'required' => '',
+    'type' => 'text',
+    'placeholder' => '',
+    'label' => 'Legal Practice/Firm',
+    'help' => '',
+  ),
+  'form-user-account-bio' => 
+  array (
+    'passed' => false,
+    'clean' => '',
+    'value' => '',
+    'section' => 3,
+    'required' => '',
+    'type' => 'textarea',
+    'placeholder' => '',
+    'label' => 'Biographical Info',
+    'help' => '',
+  ),
+  'form-section-close-about-yourself' => 
+  array (
+    'passed' => true,
+    'section' => 3,
+    'type' => 'section_close',
+  ),
+);
     }
 }
 // Initialize the plugin
