@@ -2,7 +2,7 @@
 /*
 Plugin Name:       WP Swift: Form Builder Contact Form Add-On
 Description:       Generate a contact form. Requires plugin 'WP Swift: Form Builder' to be installed.
-Version:           1.0.0
+Version:           1.0.1
 Author:            Gary Swift
 License:           GPL-2.0+
 Text Domain:       wp-swift-form-builder-contact-form
@@ -13,11 +13,81 @@ class WP_Swift_Form_Builder_Contact_Form_Plugin {
      * Initializes the plugin.
      */
     public function __construct() {
-        # A shortcode for rendering the contact form.
-        add_shortcode( 'custom-contact-form', array( $this, 'render_contact_form' ) ); 
-        // add_action( 'wp_enqueue_scripts', array($this, 'enqueue_javascript') );
+        /*
+         * Check if WP_Swift_Form_Builder_Plugin exists. Abort if not.
+         */
+        include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+        if ( is_plugin_active( 'wp-swift-form-builder/form-builder.php' ) )  {
+            add_shortcode( 'custom-contact-form', array( $this, 'render_contact_form' ) ); 
+        }
+        else {
+            add_action( 'admin_init', array($this, 'plugin_deactivate') );
+            add_action( 'admin_notices', array($this, 'plugin_activate_fail_admin_notice') );
+        }
     }
- 
+
+    /**
+     * Plugin activation hook.
+     *
+     * Creates the WordPress page needed by the plugin.
+     */
+    public function plugin_activated() {
+        /*
+         * This will create the WordPress page needed to use this plugin
+         * Shortcode will also be added to content 
+         */
+        $page_definitions = array(
+            'contact-page' => array(
+                'title' => __( 'Contact Us', 'wp-swift-form-builder-contact-form' ),
+                'content' => '<p>Please use the form below to submit any questions you may have.</p>[contact-form]'
+            ),
+        );
+        $post_ids = array();
+        /*
+         * Create a new page for each page in $page_definitions
+         */
+        foreach ( $page_definitions as $slug => $page ) {
+            // Check that the page doesn't exist already
+            $query = new WP_Query( 'pagename=' . $slug );
+            if ( ! $query->have_posts() ) {
+                // Add the page using the data from the array above
+                $post_ids[] = wp_insert_post(
+                    array(
+                        'post_content'   => $page['content'],
+                        'post_name'      => $slug,
+                        'post_title'     => $page['title'],
+                        'post_status'    => 'publish',
+                        'post_type'      => 'page',
+                        'ping_status'    => 'closed',
+                        'comment_status' => 'closed',
+                    )
+                );
+            }
+        }
+        # Create transient data so we can show admin notice
+        set_transient( 'contact-form-plugin-activate-notice', $post_ids, 5 );
+    } 
+
+    /*
+     * Plugin can deactivate itself
+     */
+    public function plugin_deactivate() {
+        deactivate_plugins( plugin_basename( __FILE__ ) );
+    }
+    /*
+     * An install failed admin notice
+     */
+    public function plugin_activate_fail_admin_notice() {
+        $class = 'notice notice-error';
+        $message = __( '<strong>WP Swift: Form Builder Contact Form Add-On</strong> requires the plugin <strong>WP Swift: Form Builder</strong> to be installed. Please download this plugin from <a href="https://github.com/GarySwift/wp-swift-form-builder" target="_blank"><b>here</b></a>.', 'wp-swift-form-builder-contact-form' );
+        printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message );
+        if ( isset( $_GET['activate'] ) ){
+            unset( $_GET['activate'] );
+        } 
+    }
+    /*
+     * Enqueue the Javascript
+     */
     public function enqueue_javascript () {
         wp_enqueue_script( $handle='wp-swift-form-builder-contact-form', $src=plugins_url( '/assets/javascript/wp-swift-form-builder-contact-form.js', __FILE__ ), $deps=null, $ver=null, $in_footer=true );
     }
@@ -43,7 +113,10 @@ class WP_Swift_Form_Builder_Contact_Form_Plugin {
             $Form_Builder = new WP_Swift_Form_Builder_Plugin($attributes, $form_data, get_the_ID(), $form_builder_args, $attributes, false);
         }
         else {
-            return __( '<h4>Please install plugin WP Swift: Form Builder</h4>', 'wp-swift-form-builder-contact-form' );
+            // return __( '<h4>Please install plugin WP Swift: Form Builder</h4>', 'wp-swift-form-builder-contact-form' );
+            add_action( 'admin_init', array($this, 'plugin_deactivate') );
+            add_action( 'admin_notices', array($this, 'plugin_activate_fail_admin_notice') );
+            return null;
         }
         // Render the contact form using an external template
         return $this->get_template_html( 'contact_form', $attributes, $Form_Builder );
@@ -457,5 +530,38 @@ return $html;
 );
     }
 }
-// Initialize the plugin
+# Initialize the plugin
 $form_builder_contact_form_plugin = new WP_Swift_Form_Builder_Contact_Form_Plugin();
+# Create the custom pages at plugin activation
+register_activation_hook( __FILE__, array( 'WP_Swift_Form_Builder_Contact_Form_Plugin', 'plugin_activated' ) );
+# Add admin notice 
+add_action( 'admin_notices', 'form_builder_contact_form_plugin_activate_admin_notice' );
+/**
+ * Admin Notice on Activation.
+ * @since 1.0.1
+ */
+function form_builder_contact_form_plugin_activate_admin_notice() {
+    if( get_transient( 'contact-form-plugin-activate-notice' ) ){
+        $post_ids=get_transient( 'contact-form-plugin-activate-notice' );
+        $new_pages = '';
+        if (is_array($post_ids) && count($post_ids) == 1) {
+            $new_pages = '<br>A new contact page has been created along with the appropriate shortcode needed for this plugin.<br><br>You can edit this page here ';
+            $new_pages .= '<a href="'.get_edit_post_link($post_ids[0]).'">here</a>.';
+        }
+        elseif(is_array($post_ids) && count($post_ids) > 1) {
+            $new_pages = ' The following pages have been created. You can edit these pages here ';
+            foreach ($post_ids as $key => $id) {
+                $new_pages .= ' <a href="'.get_edit_post_link($id).'">here</a>,';
+            }
+            $new_pages = rtrim($new_pages, ', ');
+            $new_pages .= '.';
+        }
+        $class = 'updated';
+        $message = __( '<strong>WP Swift: Form Builder Contact Form Add-On</strong> has been activated.'.$new_pages, 'wp-swift-form-builder-contact-form' );
+        printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message ); 
+        if ( isset( $_GET['activate'] ) ){
+            unset( $_GET['activate'] );
+        }
+        delete_transient( 'contact-form-plugin-activate-notice' );
+    } 
+}
