@@ -18,7 +18,14 @@ class WP_Swift_Form_Builder_Contact_Form_Plugin {
          */
         include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
         if ( is_plugin_active( 'wp-swift-form-builder/form-builder.php' ) )  {
-            add_shortcode( 'custom-contact-form', array( $this, 'render_contact_form' ) ); 
+            add_shortcode( 'wp-swift-contact-form', array( $this, 'render_contact_form' ) ); 
+            /*
+             * Inputs
+             */
+            add_action( 'admin_menu', array($this, 'wp_swift_form_builder_contact_form_add_admin_menu'), 21 );
+add_action( 'admin_init', array($this, 'wp_swift_form_builder_contact_form_settings_init') );
+            // add_action( 'admin_menu', array($this, 'wp_swift_form_builder_add_admin_menu') );
+            // add_action( 'admin_init', array($this, 'wp_swift_form_builder_settings_init') );
         }
         else {
             add_action( 'admin_init', array($this, 'plugin_deactivate') );
@@ -39,7 +46,7 @@ class WP_Swift_Form_Builder_Contact_Form_Plugin {
         $page_definitions = array(
             'contact-page' => array(
                 'title' => __( 'Contact Us', 'wp-swift-form-builder-contact-form' ),
-                'content' => '<p>Please use the form below to submit any questions you may have.</p>[contact-form]'
+                'content' => '<p>Please use the form below to submit any questions you may have.</p>[wp-swift-contact-form]'
             ),
         );
         $post_ids = array();
@@ -311,45 +318,100 @@ ob_end_clean();
 return $html;
 }
     private function get_form_data() {
-        return array (
-        'form-name' => 
-          array (
-            'passed' => false,
-            'clean' => '',
-            'value' => '',
-            'section' => 0,
-            'required' => 'required',
-            'type' => 'text',
-            'placeholder' => '',
-            'label' => 'Name',
-            'help' => '',
-          ),
-          // 'form-first-name' => 
-          // array (
-          //   'passed' => false,
-          //   'clean' => '',
-          //   'value' => '',
-          //   'section' => 0,
-          //   'required' => 'required',
-          //   'type' => 'text',
-          //   'placeholder' => '',
-          //   'label' => 'First Name',
-          //   'help' => '',
-          // ),
-          // 'form-last-name' => 
-          // array (
-          //   'passed' => false,
-          //   'clean' => '',
-          //   'value' => '',
-          //   'section' => 0,
-          //   'required' => 'required',
-          //   'type' => 'text',
-          //   'placeholder' => '',
-          //   'label' => 'Last Name',
-          //   'help' => '',
-          // ),
-          'form-email' => 
-          array (
+        $options = get_option( 'wp_swift_form_builder_contact_form_settings' );
+        $form_first_and_last_name = false;
+        $form_phone = false;
+        // echo "<pre>2 wp-swift-form-builder-style</pre>";
+        // echo "<pre>"; var_dump($options); echo "</pre>";
+        // echo "<pre>"; var_dump(!isset($options['wp_swift_form_builder_checkbox_css'])); echo "</pre>";
+        // echo "<pre>"; var_dump(isset($options['wp_swift_form_builder_checkbox_css'])); echo "</pre>";
+        if (isset($options['wp_swift_form_builder_contact_form_checkbox_first_last_name'])) {
+            $form_first_and_last_name = true;
+        }
+        if (isset($options['wp_swift_form_builder_contact_form_checkbox_phone'])) {
+            $form_phone = true;
+        }
+
+        $form_data = array();
+        // $form_data = array (
+        // // 'form-name' => 
+        // //   array (
+        // //     'passed' => false,
+        // //     'clean' => '',
+        // //     'value' => '',
+        // //     'section' => 0,
+        // //     'required' => 'required',
+        // //     'type' => 'text',
+        // //     'placeholder' => '',
+        // //     'label' => 'Name',
+        // //     'help' => '',
+        // //   ),
+        //   'form-email' => 
+        //   array (
+        //     'passed' => false,
+        //     'clean' => '',
+        //     'value' => '',
+        //     'section' => 0,
+        //     'required' => 'required',
+        //     'type' => 'email',
+        //     'placeholder' => '',
+        //     'label' => 'Email',
+        //     'help' => '',
+        //   ),
+        //   'form-question' => 
+        //   array (
+        //     'passed' => false,
+        //     'clean' => '',
+        //     'value' => '',
+        //     'section' => 0,
+        //     'required' => '',
+        //     'type' => 'textarea',
+        //     'placeholder' => '',
+        //     'label' => 'Question',
+        //     'help' => '',
+        //   ),  
+        // );
+
+
+        if ($form_first_and_last_name) {
+            $form_data['form-first-name'] = array (
+                'passed' => false,
+                'clean' => '',
+                'value' => '',
+                'section' => 0,
+                'required' => 'required',
+                'type' => 'text',
+                'placeholder' => '',
+                'label' => 'First Name',
+                'help' => '',
+              );
+            $form_data['form-last-name'] = array (
+                'passed' => false,
+                'clean' => '',
+                'value' => '',
+                'section' => 0,
+                'required' => 'required',
+                'type' => 'text',
+                'placeholder' => '',
+                'label' => 'Last Name',
+                'help' => '',
+              );
+        }
+        else {
+            $form_data['form-name'] = array (
+                'passed' => false,
+                'clean' => '',
+                'value' => '',
+                'section' => 0,
+                'required' => 'required',
+                'type' => 'text',
+                'placeholder' => '',
+                'label' => 'Name',
+                'help' => '',
+              );
+        }
+
+        $form_data['form-email'] = array (
             'passed' => false,
             'clean' => '',
             'value' => '',
@@ -359,9 +421,25 @@ return $html;
             'placeholder' => '',
             'label' => 'Email',
             'help' => '',
-          ),
-          'form-question' => 
-          array (
+        );
+
+
+        
+        if ($form_phone) {
+            $form_data['form-phone'] = array (
+                'passed' => false,
+                'clean' => '',
+                'value' => '',
+                'section' => 0,
+                'required' => '',
+                'type' => 'text',
+                'placeholder' => '',
+                'label' => 'Telephone',
+                'help' => '',
+              );
+        }
+
+        $form_data['form-question'] =array (
             'passed' => false,
             'clean' => '',
             'value' => '',
@@ -371,8 +449,9 @@ return $html;
             'placeholder' => '',
             'label' => 'Question',
             'help' => '',
-          ),  
         );
+
+        return $form_data;
     }
 
     public function get_account_form() {
@@ -529,6 +608,116 @@ return $html;
   ),
 );
     }
+
+
+    public function wp_swift_form_builder_contact_form_add_admin_menu(  ) { 
+
+        // add_submenu_page( 'tools.php',
+        //  'WP Swift Form Builder Contact Form',
+        //  'WP Swift Form Builder Contact Form',
+        //  'manage_options',
+        //  'wp_swift_form_builder_contact_form',
+        //  'wp_swift_form_builder_contact_form_options_page' );
+
+        if ( empty ( $GLOBALS['admin_page_hooks']['wp-swift-brightlight-main-menu'] ) ) {
+            $options_page = add_options_page( 
+                'Form Builder Contact Page Configuration',
+                'Form Builder: Contact Page',
+                'manage_options',
+                'wp-swift-form-builder-contact-form-settings-menu',
+                array($this, 'wp_swift_form_builder_contact_form_options_page') 
+            );  
+        }
+        else {
+            // Create a sub-menu under the top-level menu
+            $options_page = add_submenu_page( 'wp-swift-brightlight-main-menu',
+               'Form Builder Contact Page Configuration', 
+               'Form Builder: Contact Page',
+               'manage_options', 
+               'wp-swift-form-builder-contact-form-settings-menu',
+               array($this, 'wp_swift_form_builder_contact_form_options_page') );       
+        }
+
+    }
+
+/*
+*/
+    public function wp_swift_form_builder_contact_form_settings_init(  ) { 
+
+        register_setting( 'wp_swift_form_builder_contact_form_plugin_page', 'wp_swift_form_builder_contact_form_settings' );
+
+        add_settings_section(
+            'wp_swift_form_builder_contact_form_plugin_page_section', 
+            __( 'Set your preferences for the Contact Form here', 'wp-swift-form-builder-contact-form' ), 
+            array($this, 'wp_swift_form_builder_contact_form_settings_section_callback'), 
+            'wp_swift_form_builder_contact_form_plugin_page'
+        );
+
+        add_settings_field( 
+            'wp_swift_form_builder_contact_form_checkbox_first_last_name', 
+            __( 'Use first and last names', 'wp-swift-form-builder-contact-form' ), 
+            array($this, 'wp_swift_form_builder_contact_form_checkbox_first_last_name_render'), 
+            'wp_swift_form_builder_contact_form_plugin_page', 
+            'wp_swift_form_builder_contact_form_plugin_page_section' 
+        );
+
+        add_settings_field( 
+            'wp_swift_form_builder_contact_form_checkbox_phone', 
+            __( 'Use telephone', 'wp-swift-form-builder-contact-form' ), 
+            array($this, 'wp_swift_form_builder_contact_form_checkbox_phone_render'), 
+            'wp_swift_form_builder_contact_form_plugin_page', 
+            'wp_swift_form_builder_contact_form_plugin_page_section' 
+        );
+    }
+
+
+    public function wp_swift_form_builder_contact_form_checkbox_first_last_name_render(  ) { 
+
+        $options = get_option( 'wp_swift_form_builder_contact_form_settings' );
+        ?>
+        <input type='checkbox' name='wp_swift_form_builder_contact_form_settings[wp_swift_form_builder_contact_form_checkbox_first_last_name]' <?php checked( $options['wp_swift_form_builder_contact_form_checkbox_first_last_name'], 1 ); ?> value='1'>
+        <?php
+
+    }
+
+
+    public function wp_swift_form_builder_contact_form_checkbox_phone_render(  ) { 
+
+        $options = get_option( 'wp_swift_form_builder_contact_form_settings' );
+        ?>
+        <input type='checkbox' name='wp_swift_form_builder_contact_form_settings[wp_swift_form_builder_contact_form_checkbox_phone]' <?php checked( $options['wp_swift_form_builder_contact_form_checkbox_phone'], 1 ); ?> value='1'>
+        <?php
+
+    }
+
+    public function wp_swift_form_builder_contact_form_settings_section_callback(  ) { 
+
+        echo __( 'This section description', 'wp-swift-form-builder-contact-form' );
+
+    }
+
+
+    public function wp_swift_form_builder_contact_form_options_page(  ) { 
+if ( get_option( 'wp_swift_form_builder_contact_form_settings' )) {
+    $wp_swift_form_builder_contact_form_settings = get_option( 'wp_swift_form_builder_contact_form_settings' );
+    echo "<pre>"; var_dump($wp_swift_form_builder_contact_form_settings); echo "</pre>";
+}
+        ?>
+        <div id="form-builder-wrap" class="wrap">
+            <h2>WP Swift Form Builder Contact Form</h2>
+            <form action='options.php' method='post'>
+
+                <?php
+                    settings_fields( 'wp_swift_form_builder_contact_form_plugin_page' );
+                    do_settings_sections( 'wp_swift_form_builder_contact_form_plugin_page' );
+                    submit_button();
+                ?>
+
+            </form>
+        </div>
+        <?php
+
+    }    
 }
 # Initialize the plugin
 $form_builder_contact_form_plugin = new WP_Swift_Form_Builder_Contact_Form_Plugin();
@@ -565,3 +754,19 @@ function form_builder_contact_form_plugin_activate_admin_notice() {
         delete_transient( 'contact-form-plugin-activate-notice' );
     } 
 }
+
+// $new_general_setting = new new_general_setting();
+
+// class new_general_setting {
+//     function new_general_setting( ) {
+//         add_filter( 'admin_init' , array( &$this , 'register_fields' ) );
+//     }
+//     function register_fields() {
+//         register_setting( 'general', 'favorite_color', 'esc_attr' );
+//         add_settings_field('fav_color', '<label for="favorite_color">'.__('Favorite Color?' , 'favorite_color' ).'</label>' , array(&$this, 'fields_html') , 'general' );
+//     }
+//     function fields_html() {
+//         $value = get_option( 'favorite_color', '' );
+//         echo '<input type="text" id="favorite_color" name="favorite_color" value="' . $value . '" />';
+//     }
+// }
