@@ -1,14 +1,5 @@
 <?php
 /*
-Plugin Name:       WP Swift: Form Builder Contact Form Add-On
-Description:       Generate a contact form. Requires plugin 'WP Swift: Form Builder' to be installed.
-Version:           1.0.1
-Author:            Gary Swift
-License:           GPL-2.0+
-Text Domain:       wp-swift-form-builder-contact-form
-*/
-
-/*
  * Check if WP_Swift_Form_Builder_Plugin exists.
  */
 include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
