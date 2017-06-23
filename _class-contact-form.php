@@ -95,6 +95,7 @@ if ( is_plugin_active( 'wp-swift-form-builder/form-builder.php' ) )  {
                 $send_email=true;//Debug variable. If false, emails will not be sent
                 $date = ' - '.date("Y-m-d H:i:s").' GMT';
                 $post_id_or_acf_option= '';//We can specify if it is an option field or use a post_id (https://www.advancedcustomfields.com/add-ons/options-page/)
+                $headers = array('Content-Type: text/html; charset=UTF-8');
 
                 /*
                  * These are the default form settings
@@ -150,7 +151,7 @@ if ( is_plugin_active( 'wp-swift-form-builder/form-builder.php' ) )  {
                  * Send the email to the admin/office
                  */
                 if ($send_email) {
-                    $status = wp_mail($to, $response_subject.' - '.date("D j M Y, H:i"). ' GMT',  $email_string);//wrap_email($email_string)
+                    $status = wp_mail($to, $response_subject.' - '.date("D j M Y, H:i"). ' GMT',  $email_string, $headers);//wrap_email($email_string)
                 }
                 /*
                  * If the user has requested it, send an email acknowledgement
@@ -160,7 +161,7 @@ if ( is_plugin_active( 'wp-swift-form-builder/form-builder.php' ) )  {
                     $user_email_string = $auto_response_message.'<p>A copy of your enquiry is shown below.</p>'.$key_value_table;
                     if ($send_email) {
                         if (isset($this->form_inputs['form-email']['clean'])) {
-                            $status = wp_mail($this->form_inputs['form-email']['clean'], $auto_response_subject, $user_email_string);// wrap_email($user_response_msg)
+                            $status = wp_mail($this->form_inputs['form-email']['clean'], $auto_response_subject, $user_email_string, $headers);// wrap_email($user_response_msg)
                         }
                         
                     }
@@ -203,25 +204,67 @@ if ( is_plugin_active( 'wp-swift-form-builder/form-builder.php' ) )  {
             }
 
             private function build_confirmation_output($use_callout=true, $browser_output_header, $auto_response_message, $key_value_table, $user_output_footer) {
+
+                $framework = '';
+$options = get_option( 'wp_swift_form_builder_settings' );
+    if (isset($options['wp_swift_form_builder_select_css_framework'])) {
+        $framework = $options['wp_swift_form_builder_select_css_framework'];
+    }
+
                 ob_start(); ?>
-                    <?php if ($use_callout): ?>
-                        <div id="contact-thank-you">
-                            <div class="callout secondary" data-closable="slide-out-right">        
+                    <?php if ($use_callout):
+                        // <!-- <div id="contact-thank-you">
+                        //     <div class="callout secondary" data-closable="slide-out-right">  --> 
+
+                            if ($framework === "zurb_foundation"): ?>
+                                <div id="contact-thank-you">
+                                    <div class="callout secondary" data-closable="slide-out-right">            
+                            <?php elseif ($framework === "bootstrap"): ?>
+                                <div class="panel panel-success" id="form-success-panel">
+                                    <div class="panel-heading">
+                                        <!-- <span class="pull-right clickable" data-effect="remove"><i class="fa fa-times"></i></span> -->
+                                        <button type="button" class="close" data-target="#form-success-panel" data-dismiss="alert">
+                                            <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                                        </button>
+                                        <h3><?php echo $browser_output_header; ?></h3>
+                                        
+                                    </div>
+                                    <div class="panel-body">              
+                            <?php endif; ?>     
                     <?php endif ?>
 
-                            <h3><?php echo $browser_output_header; ?></h3>
+                            <?php if ($framework === "zurb_foundation"): ?>
+                                <h3><?php echo $browser_output_header; ?></h3>
+                            <?php endif; ?>                             
                             <p><?php echo $auto_response_message; ?></p>
                             <p>A copy of your enquiry is shown below.</p>
                             <?php echo $key_value_table; ?>
                             <?php echo $user_output_footer; ?>
 
-                    <?php if ($use_callout): ?>
-                                <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                        </div>        
+                    <?php if ($use_callout): 
+                        //         <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
+                        //             <span aria-hidden="true">&times;</span>
+                        //         </button>
+                        //     </div>
+                        // </div>   
+                            if ($framework === "zurb_foundation"): ?>
+                                        <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>        
+                            <?php elseif ($framework === "bootstrap"): ?>
+                                     </div>
+                                </div>                
+                            <?php endif; ?>
                     <?php endif;
+
+
+
+                 
+                
+
+
+
                 $html = ob_get_contents();
                 ob_end_clean();
                 return $html;
@@ -303,15 +346,27 @@ if ( is_plugin_active( 'wp-swift-form-builder/form-builder.php' ) )  {
                         'placeholder' => '',
                         'label' => 'Telephone',
                         'help' => '',
-                      );
+                    );
                 }
+
+            $form_data['form-company'] = array (
+                        'passed' => false,
+                        'clean' => '',
+                        'value' => '',
+                        'section' => 0,
+                        'required' => '',
+                        'type' => 'text',
+                        'placeholder' => '',
+                        'label' => 'Company',
+                        'help' => '',
+                    );
 
                 $form_data['form-question'] =array (
                     'passed' => false,
                     'clean' => '',
                     'value' => '',
                     'section' => 0,
-                    'required' => '',
+                    'required' => 'required',
                     'type' => 'textarea',
                     'placeholder' => '',
                     'label' => 'Question',

@@ -106,9 +106,9 @@ class WP_Swift_Contact_Form_Plugin  {
      *
      * @return string  The shortcode output
      */
-    public function render_form( $attributes, $content = null ) {
+    public function render_form( $attributes = array(), $content = null ) {
 
-        $form_builder = $this->get_form_builder();
+        $form_builder = $this->get_form_builder($attributes);
         // Render the login form using an external template
         return $this->get_template_html( 'contact_form', $attributes, $form_builder );
 
