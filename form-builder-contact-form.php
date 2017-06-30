@@ -9,6 +9,7 @@ Text Domain:       wp-swift-form-builder-contact-form
 */
 
 include "_class-contact-form.php";
+include "_class-booking-form.php";
 
 class WP_Swift_Contact_Form_Plugin  {
 
@@ -23,11 +24,15 @@ class WP_Swift_Contact_Form_Plugin  {
     public function __construct() {
 
         # Shortcode for rendering the new user registration form
-        add_shortcode( 'contact-form', array( $this, 'render_form' ) );
+        add_shortcode( 'contact-form', array( $this, 'render_contact_form' ) );
+
+        # Shortcode for rendering the new user registration form
+        add_shortcode( 'booking-form', array( $this, 'render_booking_form' ) );
 
         # Handle POST request form login form
         // add_action( 'init', array( $this, 'process_form' ) );
 
+        # Register the acf_add_options_sub_page    
         add_action( 'admin_menu', array($this, 'wp_swift_contact_form_admin_menu') );
 
         # Register ACF field groups that will appear on the options pages
@@ -44,6 +49,7 @@ class WP_Swift_Contact_Form_Plugin  {
      */ 
     public function acf_add_local_field_group_contact_form() {
         include "acf-field-groups/_acf-field-group-contact-form.php";
+        include "acf-field-groups/_acf-field-group-form-inputs.php";
     }
 
     /*
@@ -69,7 +75,7 @@ class WP_Swift_Contact_Form_Plugin  {
     public function wp_swift_contact_form_admin_menu() {
     
         acf_add_options_sub_page(array(
-            'title' => 'Contact Form',
+            'title' => 'Contact Forms',
             'slug' => 'contact_form',
             'parent' => $this->get_parent_slug(),
         ));
@@ -106,14 +112,29 @@ class WP_Swift_Contact_Form_Plugin  {
      *
      * @return string  The shortcode output
      */
-    public function render_form( $attributes = array(), $content = null ) {
+    public function render_contact_form( $attributes = array(), $content = null ) {
 
-        $form_builder = $this->get_form_builder($attributes);
+        $form_builder = $this->get_form_builder_contact_form($attributes);
         // Render the login form using an external template
         return $this->get_template_html( 'contact_form', $attributes, $form_builder );
 
     }  
 
+    /**
+     * A shortcode for rendering the booking form.
+     *
+     * @param  array   $attributes  Shortcode attributes.
+     * @param  string  $content     The text content for shortcode. Not used.
+     *
+     * @return string  The shortcode output
+     */
+    public function render_booking_form( $attributes = array(), $content = null ) {
+
+        $form_builder = $this->get_form_builder_booking_form($attributes);
+        // Render the login form using an external template
+        return $this->get_template_html( 'booking_form', $attributes, $form_builder );
+
+    }  
     /**
      * Renders the contents of the given template to a string and returns it.
      *
@@ -141,10 +162,6 @@ class WP_Swift_Contact_Form_Plugin  {
         return $html;
     } 
     
-    private function get_form_builder( $attributes=array() )  {
-        return get_contact_form( $attributes ); 
-    } 
-
 
 
 
@@ -240,6 +257,14 @@ class WP_Swift_Contact_Form_Plugin  {
             </div>
         <?php 
         endif;
+    } 
+
+    private function get_form_builder_contact_form( $attributes=array() )  {
+        return get_contact_form( $attributes ); 
+    } 
+
+    private function get_form_builder_booking_form( $attributes=array() )  {
+        return get_booking_form( $attributes ); 
     }                 
 }
 
@@ -250,6 +275,24 @@ function get_contact_form( $attributes=array() ) {
     }
     return $form_builder;        
 }
+
+function get_booking_form( $attributes=array() ) {
+    $form_builder = null;
+    if (class_exists('WP_Swift_Form_Builder_Booking_Form')) {
+        $form_builder = new WP_Swift_Form_Builder_Booking_Form($attributes);    
+    }
+    return $form_builder;        
+}
+
+function form_builder_location_array($id) {
+    return array ( array (
+            'param' => 'page',
+            'operator' => '==',
+            'value' => $id,
+        ),
+    );
+}
+
 // Initialize the plugin
 $wp_swift_contact_form_plugin = new WP_Swift_Contact_Form_Plugin();
 

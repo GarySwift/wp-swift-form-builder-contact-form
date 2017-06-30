@@ -387,7 +387,7 @@ $options = get_option( 'wp_swift_form_builder_settings' );
              * Get the form settings
              */
             private function get_form_args() {
-                $form_builder_args = array("show_mail_receipt"=>true, "option" => "option");
+                $form_builder_args = array("show_mail_receipt"=>true, "option" => "");
                 return $form_builder_args;
             }
         }
