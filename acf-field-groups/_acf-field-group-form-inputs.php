@@ -4,22 +4,40 @@ $booking_form_page = false;
 $location = array();
 
 
+
+$form_pages = array();
+if( class_exists('acf') ):
+	if( have_rows('additional_forms', 'option') ):
+	    while ( have_rows('additional_forms', 'option') ) : the_row();
+	        $form_pages[] = get_sub_field('page');
+	    endwhile;
+	endif;
+endif;
+
+// echo "<pre>"; var_dump("Lorem ipsum dolor sit amet, consectetur adipisicing elit");var_dump($form_pages); echo "</pre>";
+
 if( function_exists('acf_add_local_field_group') ):
 
 	// if( get_field('contact_form_page', 'option') ) {
 	//     $contact_form_page = get_field('contact_form_page', 'option');
 	//     $location[] = form_builder_location_array( $contact_form_page );
 	// }
-	if( get_field('booking_form_page', 'option') ) {
-	    $booking_form_page = get_field('booking_form_page', 'option');
-	    $location[] = form_builder_location_array( $booking_form_page );
+	// if( get_field('booking_form_page', 'option') ) {
+	//     $booking_form_page = get_field('booking_form_page', 'option');
+	//     $location[] = form_builder_location_array( $booking_form_page );
+
+	// }
+	foreach ($form_pages as $page_id) {
+		$location[] = form_builder_location_array( $page_id );
 	}
 
 endif;
 
+// echo "<pre>"; var_dump("Lorem ipsum dolor sit amet, consectetur adipisicing elit");var_dump($location); echo "</pre>";
+
 if( function_exists('acf_add_local_field_group') ):
 
-	if ( $contact_form_page || $booking_form_page ):
+	if ( count($form_pages) || $contact_form_page || $booking_form_page ):
  
 	acf_add_local_field_group(array (
 		'key' => 'group_57b6fd868aeca',

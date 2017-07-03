@@ -8,8 +8,12 @@ License:           GPL-2.0+
 Text Domain:       wp-swift-form-builder-contact-form
 */
 
+include "_form-data.php";
 include "_class-contact-form.php";
 include "_class-booking-form.php";
+include "_class-generic-form.php";
+
+include "_render-forms-after-content.php";
 
 class WP_Swift_Contact_Form_Plugin  {
 
@@ -50,6 +54,8 @@ class WP_Swift_Contact_Form_Plugin  {
     public function acf_add_local_field_group_contact_form() {
         include "acf-field-groups/_acf-field-group-contact-form.php";
         include "acf-field-groups/_acf-field-group-form-inputs.php";
+        // include "acf-field-groups/_acf-field-group-options-page-settings.php";
+        include "acf-field-groups/_acf-field-group-contact-page-input-settings.php";
     }
 
     /*
@@ -271,15 +277,23 @@ class WP_Swift_Contact_Form_Plugin  {
 function get_contact_form( $attributes=array() ) {
     $form_builder = null;
     if (class_exists('WP_Swift_Form_Builder_Contact_Form')) {
-        $form_builder = new WP_Swift_Form_Builder_Contact_Form($attributes);    
+        $form_builder = new WP_Swift_Form_Builder_Contact_Form( get_contact_form_data(), array("show_mail_receipt"=>true, "option" => "") );    
     }
     return $form_builder;        
 }
 
 function get_booking_form( $attributes=array() ) {
     $form_builder = null;
-    if (class_exists('WP_Swift_Form_Builder_Booking_Form')) {
-        $form_builder = new WP_Swift_Form_Builder_Booking_Form($attributes);    
+    if (class_exists('WP_Swift_Form_Builder_Contact_Form')) {
+        $form_builder = new WP_Swift_Form_Builder_Contact_Form( get_booking_form_data(), array("show_mail_receipt"=>true, "option" => "") );    
+    }
+    return $form_builder;        
+}
+
+function get_generic_form( $attributes=array() ) {
+    $form_builder = null;
+    if (class_exists('WP_Swift_Form_Builder_Contact_Form')) {
+        $form_builder = new WP_Swift_Form_Builder_Contact_Form( get_book_inputs(get_the_id()), array("show_mail_receipt"=>true, "option" => "") );
     }
     return $form_builder;        
 }
