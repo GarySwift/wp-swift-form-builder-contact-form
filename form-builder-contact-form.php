@@ -10,8 +10,8 @@ Text Domain:       wp-swift-form-builder-contact-form
 
 include "_form-data.php";
 include "_class-contact-form.php";
-include "_class-booking-form.php";
-include "_class-generic-form.php";
+// include "_class-booking-form.php";
+// include "_class-generic-form.php";
 
 include "_render-forms-after-content.php";
 
