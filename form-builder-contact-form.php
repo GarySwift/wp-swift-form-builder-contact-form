@@ -10,9 +10,7 @@ Text Domain:       wp-swift-form-builder-contact-form
 
 include "_form-data.php";
 include "_class-contact-form.php";
-// include "_class-booking-form.php";
-// include "_class-generic-form.php";
-
+require_once 'email-templates/wp-swift-email-templates.php';
 include "_render-forms-after-content.php";
 
 class WP_Swift_Contact_Form_Plugin  {
@@ -31,7 +29,7 @@ class WP_Swift_Contact_Form_Plugin  {
         add_shortcode( 'contact-form', array( $this, 'render_contact_form' ) );
 
         # Shortcode for rendering the new user registration form
-        add_shortcode( 'booking-form', array( $this, 'render_booking_form' ) );
+        // add_shortcode( 'booking-form', array( $this, 'render_booking_form' ) );
 
         # Handle POST request form login form
         // add_action( 'init', array( $this, 'process_form' ) );
@@ -40,7 +38,7 @@ class WP_Swift_Contact_Form_Plugin  {
         add_action( 'admin_menu', array($this, 'wp_swift_contact_form_admin_menu') );
 
         # Register ACF field groups that will appear on the options pages
-        add_action( 'admin_menu', array($this, 'acf_add_local_field_group_contact_form') );
+        add_action( 'init', array($this, 'acf_add_local_field_group_contact_form') );
 
         # Register the inputs
         add_action( 'admin_init', array($this, 'wp_swift_form_builder_contact_form_settings_init') );   
@@ -81,7 +79,7 @@ class WP_Swift_Contact_Form_Plugin  {
     public function wp_swift_contact_form_admin_menu() {
     
         acf_add_options_sub_page(array(
-            'title' => 'Contact Forms',
+            'title' => 'Forms',
             'slug' => 'contact_form',
             'parent' => $this->get_parent_slug(),
         ));
@@ -312,3 +310,5 @@ $wp_swift_contact_form_plugin = new WP_Swift_Contact_Form_Plugin();
 
 // Create the custom pages at plugin activation
 register_activation_hook( __FILE__, array( 'WP_Swift_Contact_Form_Plugin', 'plugin_activated' ) );
+
+require_once '_get-form-array.php';

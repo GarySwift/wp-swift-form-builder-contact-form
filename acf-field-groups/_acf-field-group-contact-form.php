@@ -3,12 +3,14 @@ $contact_form_page = false;
 $booking_form_page = false;
 $location = array();
 
+// echo "<pre>";var_dump("Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet voluptate repellendus molestias nihil id, aliquam corrupti ipsa temporibus dignissimos, doloribus. Tenetur a eos laborum optio libero amet, omnis placeat eum!");echo "</pre>";
 $form_pages = array();
 if( class_exists('acf') ):
 	if( have_rows('additional_forms', 'option') ):
 	    while ( have_rows('additional_forms', 'option') ) : the_row();
 	        $form_pages[] = get_sub_field('page');
 	    endwhile;
+	    // echo "<pre>";var_dump($form_pages);echo "</pre>";
 	endif;
 endif;
 
@@ -27,6 +29,7 @@ if( function_exists('acf_add_local_field_group') ):
 		$location[] = form_builder_location_array( $page_id );
 	}
 	
+	// echo "<pre>location ";var_dump($location);echo "</pre>";
 	if ( count($form_pages) || $contact_form_page || $booking_form_page ):
  
 	$sitename = get_bloginfo('name');

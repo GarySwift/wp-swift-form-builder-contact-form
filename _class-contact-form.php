@@ -68,7 +68,7 @@ if ( is_plugin_active( 'wp-swift-form-builder/form-builder.php' ) )  {
                 /*
                  * Variables
                  */
-                $send_email=false;//Debug variable. If false, emails will not be sent
+                $send_email=true;//Debug variable. If false, emails will not be sent
                 $date = ' - '.date("Y-m-d H:i:s").' GMT';
                 $post_id_or_acf_option= '';//We can specify if it is an option field or use a post_id (https://www.advancedcustomfields.com/add-ons/options-page/)
                 $headers = array('Content-Type: text/html; charset=UTF-8');
@@ -98,7 +98,7 @@ if ( is_plugin_active( 'wp-swift-form-builder/form-builder.php' ) )  {
                 }
                 // Set reponse subject for email
                 if (get_field('response_subject', $this->option)) {
-                    $response_subject = get_field('response_subject', $this->option).$date; 
+                    $response_subject = get_field('response_subject', $this->option); 
                 }
                 // Start the reponse message for the email
                 if (get_field('response_message', $this->option)) {
@@ -127,7 +127,7 @@ if ( is_plugin_active( 'wp-swift-form-builder/form-builder.php' ) )  {
                  * Send the email to the admin/office
                  */
                 if ($send_email) {
-                    $status = wp_mail($to, $response_subject.' - '.date("D j M Y, H:i"). ' GMT',  $email_string, $headers);//wrap_email($email_string)
+                    $status = wp_mail($to, $response_subject.' - '.date("D j M Y, H:i"). ' GMT', wp_swift_wrap_email($email_string), $headers);//wrap_email($email_string)
                 }
                 /*
                  * If the user has requested it, send an email acknowledgement
@@ -137,7 +137,7 @@ if ( is_plugin_active( 'wp-swift-form-builder/form-builder.php' ) )  {
                     $user_email_string = $auto_response_message.'<p>A copy of your enquiry is shown below.</p>'.$key_value_table;
                     if ($send_email) {
                         if (isset($this->form_inputs['form-email']['clean'])) {
-                            $status = wp_mail($this->form_inputs['form-email']['clean'], $auto_response_subject, $user_email_string, $headers);// wrap_email($user_response_msg)
+                            $status = wp_mail($this->form_inputs['form-email']['clean'], $auto_response_subject, wp_swift_wrap_email($user_email_string), $headers);// wrap_email($user_response_msg)
                         }
                         
                     }

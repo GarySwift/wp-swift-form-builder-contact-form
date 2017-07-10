@@ -29,30 +29,6 @@ acf_add_local_field_group(array (
 			'ui' => 1,
 		),
 		array (
-			'key' => 'field_5957a5404d45a',
-			'label' => 'Booking Form Page',
-			'name' => 'booking_form_page',
-			'type' => 'post_object',
-			'instructions' => 'Please select the page you wish to have as the booking page',
-			'required' => 0,
-			'conditional_logic' => 0,
-			'wrapper' => array (
-				'width' => '',
-				'class' => '',
-				'id' => '',
-			),
-			'post_type' => array (
-				0 => 'page',
-				1 => 'page',
-			),
-			'taxonomy' => array (
-			),
-			'allow_null' => 1,
-			'multiple' => 0,
-			'return_format' => 'id',
-			'ui' => 1,
-		),
-		array (
 			'key' => 'field_59578481a9d5a',
 			'label' => 'Additional Forms',
 			'name' => 'additional_forms',
