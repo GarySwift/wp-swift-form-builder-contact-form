@@ -54,7 +54,7 @@ class WP_Swift_Contact_Form_Plugin  {
     public function acf_add_local_field_group_contact_form() {
         include "acf-field-groups/_acf-field-group-contact-form.php";
         include "acf-field-groups/_acf-field-group-form-inputs.php";
-        // include "acf-field-groups/_acf-field-group-options-page-settings.php";
+        include "acf-field-groups/_acf-field-group-options-page-settings.php";
         include "acf-field-groups/_acf-field-group-contact-page-input-settings.php";
     }
 
