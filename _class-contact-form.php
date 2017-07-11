@@ -69,6 +69,10 @@ if ( is_plugin_active( 'wp-swift-form-builder/form-builder.php' ) )  {
                  * Variables
                  */
                 $send_email=true;//Debug variable. If false, emails will not be sent
+                $options = get_option( 'wp_swift_form_builder_settings' );
+                if (isset($options['wp_swift_form_builder_checkbox_debug_mode']) && $options['wp_swift_form_builder_checkbox_debug_mode'] === '1') {
+                    $send_email=false;
+                }
                 $date = ' - '.date("Y-m-d H:i:s").' GMT';
                 $post_id_or_acf_option= '';//We can specify if it is an option field or use a post_id (https://www.advancedcustomfields.com/add-ons/options-page/)
                 $headers = array('Content-Type: text/html; charset=UTF-8');
@@ -143,7 +147,7 @@ if ( is_plugin_active( 'wp-swift-form-builder/form-builder.php' ) )  {
                     }
                 }
                 $user_output_footer = '<p>A confirmation email has been sent to you including these details.</p>';
-                // $this->estimate_table();
+
                 /*
                  * Return the html
                  */              
@@ -202,195 +206,54 @@ if ( is_plugin_active( 'wp-swift-form-builder/form-builder.php' ) )  {
                 if (isset($options['wp_swift_form_builder_select_css_framework'])) {
                     $framework = $options['wp_swift_form_builder_select_css_framework'];
                 }
-
-                ob_start(); ?>
-                    <?php if ($use_callout):
-                            if ($framework === "zurb_foundation"): ?>
-                                <div id="booking-thank-you">
-                                    <div class="callout secondary" data-closable="slide-out-right">            
-                            <?php elseif ($framework === "bootstrap"): ?>
-                                <div class="panel panel-success" id="form-success-panel">
-                                    <div class="panel-heading">
-                                        <button type="button" class="close" data-target="#form-success-panel" data-dismiss="alert">
-                                            <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
-                                        </button>
-                                        <h3><?php echo $browser_output_header; ?></h3>
-                                        
-                                    </div>
-                                    <div class="panel-body">              
-                            <?php endif; ?>     
-                    <?php endif ?>
-
-                            <?php if ($framework === "zurb_foundation"): ?>
-                                <h3><?php echo $browser_output_header; ?></h3>
-                            <?php endif; ?>                             
-                            <p><?php echo $auto_response_message; ?></p>
-                            <p>A copy of your enquiry is shown below.</p>
-                            <?php echo $key_value_table; ?>
-                            <?php echo $user_output_footer; ?>
-
-                    <?php if ($use_callout):  
-                            if ($framework === "zurb_foundation"): ?>
-                                        <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
-                                        <span aria-hidden="true">&times;</span>
+                ob_start();
+                if (isset($options['wp_swift_form_builder_checkbox_debug_mode']) && $options['wp_swift_form_builder_checkbox_debug_mode'] === '1'): ?>
+                    <pre>
+                        <div><b>Debug Mode</b></div>
+                        <br><?php var_dump($_POST); ?>
+                    </pre>
+                <?php endif ?>
+                <?php if ($use_callout):
+                        if ($framework === "zurb_foundation"): ?>
+                            <div id="booking-thank-you">
+                                <div class="callout secondary" data-closable="slide-out-right">            
+                        <?php elseif ($framework === "bootstrap"): ?>
+                            <div class="panel panel-success" id="form-success-panel">
+                                <div class="panel-heading">
+                                    <button type="button" class="close" data-target="#form-success-panel" data-dismiss="alert">
+                                        <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
                                     </button>
-                                </div>        
-                            <?php elseif ($framework === "bootstrap"): ?>
-                                     </div>
-                                </div>                
-                            <?php endif; ?>
-                    <?php endif;
+                                    <h3><?php echo $browser_output_header; ?></h3>
+                                    
+                                </div>
+                                <div class="panel-body">              
+                        <?php endif; ?>     
+                <?php endif ?>
+
+                        <?php if ($framework === "zurb_foundation"): ?>
+                            <h3><?php echo $browser_output_header; ?></h3>
+                        <?php endif; ?>                             
+                        <p><?php echo $auto_response_message; ?></p>
+                        <p>A copy of your enquiry is shown below.</p>
+                        <?php echo $key_value_table; ?>
+                        <?php echo $user_output_footer; ?>
+
+                <?php if ($use_callout):  
+                        if ($framework === "zurb_foundation"): ?>
+                                    <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>        
+                        <?php elseif ($framework === "bootstrap"): ?>
+                                 </div>
+                            </div>                
+                        <?php endif; ?>
+                <?php endif;
 
                 $html = ob_get_contents();
                 ob_end_clean();
                 return $html;
-            }  
-            /*
-             * Get the form settings
-             */
-            // private function get_form_args() {
-            //     $form_builder_args = array("show_mail_receipt"=>true, "option" => "");
-            //     return $form_builder_args;
-            // }
-
-            /*
-             * Get the form settings array
-             *
-             * @return array    form data array
-             */
-            // private function get_form_data() {
-            //     $options = get_option( 'wp_swift_form_builder_contact_form_settings' );
-            //     $form_first_and_last_name = false;
-            //     $form_phone = false;
-            //     if (isset($options['wp_swift_form_builder_contact_form_checkbox_first_last_name'])) {
-            //         $form_first_and_last_name = true;
-            //     }
-            //     if (isset($options['wp_swift_form_builder_contact_form_checkbox_phone'])) {
-            //         $form_phone = true;
-            //     }
-
-            //     $combine_name_fields = false;
-            //     $show_telephone_input = false;
-            //     $show_company_input = false;
-            //     $form_data = array();
-
-            //     if( class_exists('acf') ) {
-            //         if( get_field('contact_form_page', 'option') ) {
-            //             $contact_form_page = get_field('contact_form_page', 'option');
-            //             $location[] = form_builder_location_array( $contact_form_page );
-            //             if( get_field('combine_name_fields', $contact_form_page) ) {
-            //                 $combine_name_fields = get_field('combine_name_fields', $contact_form_page);
-            //             }
-            //             if( get_field('show_telephone_input', $contact_form_page) ) {
-            //                 $show_telephone_input = get_field('show_telephone_input', $contact_form_page);
-            //             }
-            //             if( get_field('show_company_input', $contact_form_page) ) {
-            //                 $show_company_input = get_field('show_company_input', $contact_form_page);
-            //             }
-            //         }
-            //     }
-
-            //     if (!$combine_name_fields) {
-            //         $form_data['form-first-name'] = array (
-            //             'passed' => false,
-            //             'clean' => '',
-            //             'value' => '',
-            //             'section' => 0,
-            //             'required' => 'required',
-            //             'type' => 'text',
-            //             'data_type' => 'text',
-            //             'placeholder' => '',
-            //             'label' => 'First Name',
-            //             'help' => '',
-            //           );
-            //         $form_data['form-last-name'] = array (
-            //             'passed' => false,
-            //             'clean' => '',
-            //             'value' => '',
-            //             'section' => 0,
-            //             'required' => 'required',
-            //             'type' => 'text',
-            //             'data_type' => 'text',
-            //             'placeholder' => '',
-            //             'label' => 'Last Name',
-            //             'help' => '',
-            //           );
-            //     }
-            //     else {
-            //         $form_data['form-name'] = array (
-            //             'passed' => false,
-            //             'clean' => '',
-            //             'value' => '',
-            //             'section' => 0,
-            //             'required' => 'required',
-            //             'type' => 'text',
-            //             'data_type' => 'text',
-            //             'placeholder' => '',
-            //             'label' => 'Name',
-            //             'help' => '',
-            //           );
-            //     }
-
-            //     $form_data['form-email'] = array (
-            //         'passed' => false,
-            //         'clean' => '',
-            //         'value' => '',
-            //         'section' => 0,
-            //         'required' => 'required',
-            //         'type' => 'email',
-            //         'data_type' => 'email',
-            //         'placeholder' => '',
-            //         'label' => 'Email',
-            //         'help' => '',
-            //     );
-
-
-                
-            //     if ($show_telephone_input) {
-            //         $form_data['form-phone'] = array (
-            //             'passed' => false,
-            //             'clean' => '',
-            //             'value' => '',
-            //             'section' => 0,
-            //             'required' => '',
-            //             'type' => 'text',
-            //             'data_type' => 'text',
-            //             'placeholder' => '',
-            //             'label' => 'Telephone',
-            //             'help' => '',
-            //         );
-            //     }
-
-            //     if ($show_company_input) {
-            //         $form_data['form-company'] = array (
-            //             'passed' => false,
-            //             'clean' => '',
-            //             'value' => '',
-            //             'section' => 0,
-            //             'required' => '',
-            //             'type' => 'text',
-            //             'data_type' => 'text',
-            //             'placeholder' => '',
-            //             'label' => 'Company',
-            //             'help' => '',
-            //         );
-            //     }
-
-            //     $form_data['form-question'] =array (
-            //         'passed' => false,
-            //         'clean' => '',
-            //         'value' => '',
-            //         'section' => 0,
-            //         'required' => 'required',
-            //         'type' => 'textarea',
-            //         'data_type' => 'textarea',
-            //         'placeholder' => '',
-            //         'label' => 'Question',
-            //         'help' => '',
-            //     );
-
-            //     return $form_data;
-            // }
+            }
         }
     }
 }

@@ -19,7 +19,7 @@ function metabox_form_builder_form_data_array() {
 }
 // callback function to populate metabox
 function metabox_form_builder_form_data_array_content() { 
-	$form_data = get_book_inputs();
+	$form_data = get_page_inputs();
 	?><p>Developers can copy and paste the code below to save on page loading times in the front end.</p>
 	<textarea readonly class="copy" onclick="this.focus();this.select()" onfocus="this.focus();this.select();"><?php var_export($form_data) ?></textarea><?php 
 }
