@@ -121,7 +121,7 @@ acf_add_local_field_group(array (
 				'class' => '',
 				'id' => '',
 			),
-			'message' => 'This form will be automatically be shown after the main content. However, you can override this default behaviour by activating the switch below and using the shortcode [contact-form]. You should put the shortcode into the WYSIWYG editor on this page. You can also enclose content like this [shorcode]content[/shorcode].',
+			'message' => 'This form will be automatically be shown after the main content. However, you can override this default behaviour by activating the switch below and using the shortcode [contact-form]. You should put the shortcode into the WYSIWYG editor on this page. You can also enclose content like this [shortcode]content[/shortcode].',
 			'new_lines' => 'wpautop',
 			'esc_html' => 0,
 		),

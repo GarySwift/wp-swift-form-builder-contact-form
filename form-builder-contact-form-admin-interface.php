@@ -1,6 +1,4 @@
 <?php
-
-
 class WP_Swift_Contact_Form_Plugin_Admin_Interface  {
 
     private $text_domain = 'wp-swift-form-builder-contact-form-admin-interface';
