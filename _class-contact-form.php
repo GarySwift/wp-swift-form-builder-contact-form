@@ -207,7 +207,7 @@ if ( is_plugin_active( 'wp-swift-form-builder/form-builder.php' ) )  {
                     $framework = $options['wp_swift_form_builder_select_css_framework'];
                 }
                 ob_start();
-                if (isset($options['wp_swift_form_builder_checkbox_debug_mode']) && $options['wp_swift_form_builder_checkbox_debug_mode'] === '1'): ?>
+                if (isset($options['_wp_swift_form_builder_checkbox_debug_mode']) && $options['wp_swift_form_builder_checkbox_debug_mode'] === '1'): ?>
                     <pre>
                         <div><b>Debug Mode</b></div>
                         <br><?php var_dump($_POST); ?>
@@ -215,7 +215,7 @@ if ( is_plugin_active( 'wp-swift-form-builder/form-builder.php' ) )  {
                 <?php endif ?>
                 <?php if ($use_callout):
                         if ($framework === "zurb_foundation"): ?>
-                            <div id="booking-thank-you">
+                            <div id="form-thank-you">
                                 <div class="callout secondary" data-closable="slide-out-right">            
                         <?php elseif ($framework === "bootstrap"): ?>
                             <div class="panel panel-success" id="form-success-panel">
